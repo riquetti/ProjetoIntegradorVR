@@ -172,4 +172,41 @@ public class ComercioDadosIbgeRepository {
         });
     }
 
+    // Método de consulta passando a localização e raio de ação
+    public List<ComercioDadosIbge> findByLocationAndRaio(String pontoTexto, Long raioAcaoMetros) {
+        String sql =
+                "SELECT \n" +
+                        "    ST_AsText(ST_SetSRID(ST_GeomFromText(?), 4326)) AS localizacao_texto, \n" +
+                        "    ? AS raio_acao_metros,\n" +
+                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS Renda_Media_IBGE2010\n" +
+                        "FROM \n" +
+                        "    \"IBGE_Limeira_2010\" AS ibge\n" +
+                        "JOIN \n" +
+                        "    \"Basico_Limeira_IBGE2010\" AS basico\n" +
+                        "ON \n" +
+                        "    ibge.cd_geocodi = basico.\"Cod_setor\"\n" +
+                        "WHERE \n" +
+                        "    ST_Intersects(\n" +
+                        "        ST_Buffer(ST_SetSRID(ST_GeomFromText(?), 4326)::geography, ?)::geometry, \n" +
+                        "        ibge.geom::geometry\n" +
+                        "    )\n" +
+                        "GROUP BY \n" +
+                        "    localizacao_texto, \n" +
+                        "    raio_acao_metros;";
+
+        return jdbcTemplate.query(sql, new Object[]{pontoTexto, raioAcaoMetros, pontoTexto, raioAcaoMetros}, (rs, rowNum) -> {
+            ComercioDadosIbge loc = new ComercioDadosIbge();
+
+            // Definindo valores padrão caso sejam nulos
+            loc.setIdComercio(0L); // Valor padrão para idComercio
+            loc.setNome("Ponto de consulta"); // Valor padrão para nome
+
+            loc.setLocalizacaoTexto(rs.getString("localizacao_texto"));
+            loc.setRaioAcaoMetros(rs.getLong("raio_acao_metros"));
+            loc.setRendaMediaIbge2010(rs.getBigDecimal("Renda_Media_IBGE2010"));
+
+            return loc;
+        });
+    }
+
 }

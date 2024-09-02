@@ -49,4 +49,11 @@ public class ComercioDadosIbgeService {
                 .collect(Collectors.toList());
     }
 
+    public List<ComercioDadosIbgeDTO> getLocalizacaoComercioByPontoAndRaio(String pontoTexto, Long raioAcaoMetros) {
+        return repository.findByLocationAndRaio(pontoTexto, raioAcaoMetros)
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 }

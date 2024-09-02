@@ -41,4 +41,11 @@ public class ComercioDadosIbgeController {
         return service.getAllLocalizacaoComercioWithRaio(raioAcaoMetros);
     }
 
+    @GetMapping("/ponto-raio")
+    public List<ComercioDadosIbgeDTO> getLocalizacaoComercioByPontoAndRaio(
+            @RequestParam("pontoTexto") String pontoTexto,
+            @RequestParam("raioAcaoMetros") Long raioAcaoMetros) {
+        return service.getLocalizacaoComercioByPontoAndRaio(pontoTexto, raioAcaoMetros);
+    }
+
 }

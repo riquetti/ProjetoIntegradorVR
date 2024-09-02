@@ -10,4 +10,5 @@ public interface ComercioDadosIbgeMapper {
     ComercioDadosIbgeMapper INSTANCE = Mappers.getMapper(ComercioDadosIbgeMapper.class);
 
     ComercioDadosIbgeDTO toDTO(ComercioDadosIbge entity);
+    ComercioDadosIbge toEntity(ComercioDadosIbgeDTO dto);
 }
