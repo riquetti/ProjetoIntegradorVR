@@ -1,9 +1,6 @@
 package com.riquetti.ProjetoIntegrador.controller;
 
-import com.riquetti.ProjetoIntegrador.dto.ComercioDadosIbgeDTO;
 import com.riquetti.ProjetoIntegrador.dto.ComercioRaioAvenidaDTO;
-import com.riquetti.ProjetoIntegrador.dto.UsuarioDTO;
-import com.riquetti.ProjetoIntegrador.entity.ComercioRaioAvenida;
 import com.riquetti.ProjetoIntegrador.service.ComercioRaioAvenidaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

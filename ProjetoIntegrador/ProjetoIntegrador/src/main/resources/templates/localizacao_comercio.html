@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Localização do Comércio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 100vh; /* Tela inteira */
+            width: 100vw;  /* Largura completa */
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .form-container {
+            position: absolute;
+            top: 20px;
+            left: 50px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group input {
+            width: 200px;
+            padding: 5px;
+        }
+        .form-group button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h4>Consultar Localização do Comércio</h4>
+    <div class="form-group">
+        <input type="text" id="idComercio" placeholder="Digite o ID do comércio">
+        <button onclick="consultarLocalizacao()">Consultar</button>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    // Inicializar o mapa
+    const map = L.map('map').setView([-22.5472682, -47.3884781], 13);
+
+    // Adicionar camada de tiles (mapa base)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let marker;
+
+    async function consultarLocalizacao() {
+        const idComercio = document.getElementById('idComercio').value;
+
+        if (idComercio) {
+            try {
+                const response = await fetch(`/api/localizacao-comercios/${idComercio}`);
+                if (response.ok) {
+                    const data = await response.json();
+
+                    const localizacao = data.localizacao.replace('POINT(', '').replace(')', '').split(' ');
+                    const latitude = parseFloat(localizacao[1]);
+                    const longitude = parseFloat(localizacao[0]);
+
+                    // Se já houver um marcador, removê-lo antes de adicionar um novo
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+
+                    // Criar marcador no mapa
+                    marker = L.marker([latitude, longitude]).addTo(map);
+
+                    // Exibir popup com detalhes do comércio ao passar o mouse
+                    marker.bindPopup(`
+                        <strong>ID:</strong> ${data.idComercio}<br>
+                        <strong>Nome:</strong> ${data.nome}<br>
+                        <strong>Latitude:</strong> ${latitude}<br>
+                        <strong>Longitude:</strong> ${longitude}
+                    `).openPopup();
+
+                    // Zoom para o local do comércio
+                    map.setView([latitude, longitude], 15);
+                } else {
+                    alert('Comércio não encontrado.');
+                }
+            } catch (error) {
+                alert('Erro ao consultar o comércio.');
+            }
+        } else {
+            alert('Por favor, digite um ID de comércio.');
+        }
+    }
+</script>
+</body>
+</html>

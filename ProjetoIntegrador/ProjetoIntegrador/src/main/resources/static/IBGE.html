@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa IBGE - Pesquisa por Município</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Remove as barras de rolagem */
+        }
+        #map {
+            width: 100vw; /* 100% da largura da viewport */
+            height: 100vh; /* 100% da altura da viewport */
+        }
+        .search-bar {
+            position: absolute;
+            top: 10px;
+            left: 50px; /* Ajuste a posição para a direita */
+            z-index: 1000; /* Garante que a barra de pesquisa fique sobre o mapa */
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .search-bar input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<!-- Barra de pesquisa -->
+<div class="search-bar">
+    <input type="text" id="municipioId" placeholder="Digite o código do município">
+    <button onclick="searchMunicipio()">Buscar</button>
+</div>
+
+<!-- Div onde o mapa será exibido -->
+<div id="map"></div>
+
+<script>
+    // Inicializa o mapa
+    var map = L.map('map').setView([-15.7801, -47.9292], 4);  // Coordenadas iniciais (Brasil)
+
+    // Adiciona uma camada base (mapa de fundo)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Camada que conterá o município
+    var municipioLayer;
+
+    // Função para buscar o município e exibir no mapa
+    function searchMunicipio() {
+        // Obter o ID do município digitado
+        var municipioId = document.getElementById('municipioId').value;
+
+        // Verificar se foi inserido um municípioId válido
+        if (!municipioId) {
+            alert('Por favor, insira um código de município válido.');
+            return;
+        }
+
+        // URL da API para buscar a malha do município
+        var url = "http://localhost:8080/malha/" + municipioId;
+
+        // Fazer a requisição para o backend
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Remove a camada anterior, se existir
+                if (municipioLayer) {
+                    map.removeLayer(municipioLayer);
+                }
+
+                // Adiciona os limites do município ao mapa
+                municipioLayer = L.geoJSON(data).addTo(map);
+
+                // Ajusta o zoom e a visão para o novo município
+                map.fitBounds(municipioLayer.getBounds());
+            })
+            .catch(error => {
+                console.error('Erro ao carregar o GeoJSON:', error);
+                alert('Erro ao carregar os limites do município. Verifique se o código está correto.');
+            });
+    }
+</script>
+</body>
+</html>
