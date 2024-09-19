@@ -18,4 +18,5 @@ public class ComercioDadosIbge {
     private String localizacaoTexto; // Para armazenar o resultado da função ST_AsText
     private Long raioAcaoMetros;
     private BigDecimal rendaMediaIbge2010;
+    private BigDecimal moradoresIbge2010;
 }

@@ -8,7 +8,8 @@ public record ComercioDadosIbgeDTO(
         String nome,
         String localizacaoTexto,
         Long raioAcaoMetros,
-        BigDecimal rendaMediaIbge2010
+        BigDecimal rendaMediaIbge2010,
+        BigDecimal moradoresIbge2010
 
 ) {
 
