@@ -15,7 +15,14 @@ public class ComercioDadosIbgeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Método existente para buscar por ID de comércio
+    /**
+     * Método para buscar dados de comércio e IBGE por comércio (ID).
+     *
+     * @param idComercio ID do comércio a ser buscado.
+     * @return Lista de ComercioDadosIbge correspondentes ao ID fornecido.
+     */
+
+
     public List<ComercioDadosIbge> findByIdComercio(Long idComercio) {
         String sql =
                 "SELECT " +
@@ -58,7 +65,13 @@ public class ComercioDadosIbgeRepository {
         });
     }
 
-
+    /**
+     * Método para buscar dados de comércio e IBGE por ID com um raio de ação especificado.
+     *
+     * @param idComercio ID do comércio a ser buscado.
+     * @param raioAcaoMetros Raio de ação em metros.
+     * @return Lista de ComercioDadosIbge correspondentes ao ID e raio fornecidos.
+     */
     // Novo método que aceita o raio de ação como parâmetro
     public List<ComercioDadosIbge> findByIdComercioWithRaio(Long idComercio, double raioAcaoMetros) {
         String sql =
@@ -101,8 +114,11 @@ public class ComercioDadosIbgeRepository {
         });
     }
 
-
-    // Método findAll original
+    /**
+     * Método para buscar todos os dados de comércio e IBGE.
+     *
+     * @return Lista de todos os ComercioDadosIbge disponíveis.
+     */
     public List<ComercioDadosIbge> findAll() {
         String sql =
                 "SELECT " +
@@ -154,7 +170,12 @@ public class ComercioDadosIbgeRepository {
 
 
 
-
+    /**
+     * Método para buscar todos os dados de comércio e IBGE com um raio de ação especificado.
+     *
+     * @param raioAcaoMetros Raio de ação em metros.
+     * @return Lista de todos os ComercioDadosIbge dentro do raio especificado.
+     */
     // Novo método findAll que aceita o raio de ação como parâmetro
     public List<ComercioDadosIbge> findAllWithRaio(double raioAcaoMetros) {
         String sql =
@@ -195,7 +216,12 @@ public class ComercioDadosIbgeRepository {
         });
     }
 
-
+    /**
+     * Método para buscar todos os dados de comércio e IBGE de um ponto geográfico com um raio de ação especificado.
+     * @param pontoTexto Ponto do comercio a ser buscado.
+     * @param raioAcaoMetros Raio de ação em metros.
+     * @return
+     */
     // Método de consulta passando a localização e raio de ação
     public List<ComercioDadosIbge> findByLocationAndRaio(String pontoTexto, Long raioAcaoMetros) {
         String sql =
@@ -233,6 +259,5 @@ public class ComercioDadosIbgeRepository {
             return loc;
         });
     }
-
 
 }
