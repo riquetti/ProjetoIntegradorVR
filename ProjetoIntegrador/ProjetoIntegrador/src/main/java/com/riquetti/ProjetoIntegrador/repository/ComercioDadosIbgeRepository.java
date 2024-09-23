@@ -7,6 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Repositório responsável pela interação com a tabela `localizacao_comercios`
+ * e pela execução de consultas relacionadas a comércios, suas localizações e
+ * cruzamento com os dados do IBGE.
+ */
 @Repository
 public class ComercioDadosIbgeRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -21,8 +26,6 @@ public class ComercioDadosIbgeRepository {
      * @param idComercio ID do comércio a ser buscado.
      * @return Lista de ComercioDadosIbge correspondentes ao ID fornecido.
      */
-
-
     public List<ComercioDadosIbge> findByIdComercio(Long idComercio) {
         String sql =
                 "SELECT " +
@@ -72,7 +75,6 @@ public class ComercioDadosIbgeRepository {
      * @param raioAcaoMetros Raio de ação em metros.
      * @return Lista de ComercioDadosIbge correspondentes ao ID e raio fornecidos.
      */
-    // Novo método que aceita o raio de ação como parâmetro
     public List<ComercioDadosIbge> findByIdComercioWithRaio(Long idComercio, double raioAcaoMetros) {
         String sql =
                 "SELECT " +
@@ -176,7 +178,6 @@ public class ComercioDadosIbgeRepository {
      * @param raioAcaoMetros Raio de ação em metros.
      * @return Lista de todos os ComercioDadosIbge dentro do raio especificado.
      */
-    // Novo método findAll que aceita o raio de ação como parâmetro
     public List<ComercioDadosIbge> findAllWithRaio(double raioAcaoMetros) {
         String sql =
                 "SELECT \n" +
@@ -222,7 +223,6 @@ public class ComercioDadosIbgeRepository {
      * @param raioAcaoMetros Raio de ação em metros.
      * @return
      */
-    // Método de consulta passando a localização e raio de ação
     public List<ComercioDadosIbge> findByLocationAndRaio(String pontoTexto, Long raioAcaoMetros) {
         String sql =
                 "SELECT \n" +

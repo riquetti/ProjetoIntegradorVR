@@ -20,43 +20,43 @@ import org.springframework.data.relational.core.mapping.Table;
 public class ComercioRaioAvenida {
 
     /**
-     * Identificador único do comércio
+     * Identificador único do comércio.
      */
     private Long idComercio;
     /**
-     * Nome do comércio
+     * Nome do comércio.
      */
     private String nome;
     /**
-     * Representa a localização como WKT (Well-Known Text)
+     * Representa a localização como WKT (Well-Known Text).
      */
     private String localizacaoTexto;
     /**
-     * Raio de ação em metros
+     * Raio de ação em metros (área de influência do comércio).
      */
     private Long raioAcaoMetros;
     /**
-     * Contagem de comércios em um raio de 200 metros
+     * Contagem de comércios em um raio de 200 metros.
      */
     private int total200m;
     /**
-     * Contagem de comércios em um raio de 500 metros
+     * Contagem de comércios em um raio de 500 metros.
      */
     private int total500m;
     /**
-     * Contagem de comércios em um raio de 1 quilômetro
+     * Contagem de comércios em um raio de 1 quilômetro.
      */
     private int total1km;
     /**
-     * Contagem de comércios em um raio de 1,5 quilômetros
+     * Contagem de comércios em um raio de 1,5 quilômetros.
      */
     private int total1_5km;
     /**
-     * Contagem de comércios em um raio de 2 quilômetros
+     * Contagem de comércios em um raio de 2 quilômetros.
      */
     private int total2km;
     /**
-     * Contagem de comércios no raio de ação definido
+     * Contagem de comércios no raio de ação definido.
      */
     private int totalRaioAcaoMetros;
 

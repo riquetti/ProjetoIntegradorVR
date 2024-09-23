@@ -8,12 +8,12 @@ package com.riquetti.ProjetoIntegrador.dto;
  * @param nome              O nome do comércio.
  * @param localizacaoTexto  A localização do comércio em formato de texto (WKT - Well-Known Text).
  * @param raioAcaoMetros    O raio de ação em metros definido para o comércio.
- * @param total200m         Contagem de interseções com avenidas dentro de um raio de 200 metros.
- * @param total500m         Contagem de interseções com avenidas dentro de um raio de 500 metros.
- * @param total1km          Contagem de interseções com avenidas dentro de um raio de 1 km.
- * @param total1_5km        Contagem de interseções com avenidas dentro de um raio de 1,5 km.
- * @param total2km          Contagem de interseções com avenidas dentro de um raio de 2 km.
- * @param totalRaioAcaoMetros Contagem de interseções com avenidas dentro do raio de ação específico do comércio.
+ * @param total200m         Contagem de vias e avenidas dentro de um raio de 200 metros.
+ * @param total500m         Contagem de vias e avenidas dentro de um raio de 500 metros.
+ * @param total1km          Contagem de vias e avenidas dentro de um raio de 1 km.
+ * @param total1_5km        Contagem de vias e avenidas dentro de um raio de 1,5 km.
+ * @param total2km          Contagem de vias e avenidas dentro de um raio de 2 km.
+ * @param totalRaioAcaoMetros Contagem de vias e avenidas dentro do raio de ação específico do comércio.
  */
 public record ComercioRaioAvenidaDTO(
 

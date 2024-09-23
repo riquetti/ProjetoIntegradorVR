@@ -7,13 +7,12 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * Interface Mapper responsável por converter entre as entidades ComercioDadosIbge e ComercioDadosIbgeDTO.
- * Utiliza o MapStruct para facilitar a conversão bidirecional entre `ComercioDadosIbge` e `ComercioDadosIbgeDTO`.
  */
 @Mapper
 public interface ComercioDadosIbgeMapper {
 
     /**
-     * Instância do Mapper gerada automaticamente pelo MapStruct.
+     * Instância do mapeador para uso em conversões.
      */
     ComercioDadosIbgeMapper INSTANCE = Mappers.getMapper(ComercioDadosIbgeMapper.class);
 

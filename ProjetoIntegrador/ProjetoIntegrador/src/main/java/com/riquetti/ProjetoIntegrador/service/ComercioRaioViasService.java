@@ -1,7 +1,6 @@
 package com.riquetti.ProjetoIntegrador.service;
 
 import com.riquetti.ProjetoIntegrador.dto.ComercioRaioViasDTO;
-import com.riquetti.ProjetoIntegrador.entity.ComercioRaioVias;
 import com.riquetti.ProjetoIntegrador.mapper.ComercioRaioViasMapper;
 import com.riquetti.ProjetoIntegrador.repository.ComercioRaioViasRepository;
 import org.springframework.stereotype.Service;

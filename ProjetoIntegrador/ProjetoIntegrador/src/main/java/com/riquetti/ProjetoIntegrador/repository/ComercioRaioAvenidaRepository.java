@@ -6,17 +6,34 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Repositório responsável pela interação com a tabela `localizacao_comercios`
+ * e pela execução de consultas relacionadas a comércios, suas localizações e
+ * dados de vias do IBGE.
+ */
 @Repository
 public class ComercioRaioAvenidaRepository {
 
+    /**
+     *
+     */
     private final JdbcTemplate jdbcTemplate;
 
-    // Construtor para injeção de dependência
+    /**
+     * Construtor para injeção de dependência do JdbcTemplate.
+     *
+     * @param jdbcTemplate o JdbcTemplate utilizado para executar as consultas.
+     */
     public ComercioRaioAvenidaRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Método para buscar todos os dados
+    /**
+     * Busca todos os comércios e suas informações, incluindo a localização
+     * e a contagem de ruas em diferentes distâncias.
+     *
+     * @return uma lista de objetos ComercioRaioAvenida representando todos os comércios e sus informações.
+     */
     public List<ComercioRaioAvenida> findAllComercios() {
         String sql = "SELECT loc.id_comercio, loc.nome, ST_AsText(loc.localizacao) AS localizacao_texto, " +
                 "loc.raio_acao_metros, COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 200)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_200m, " +
@@ -42,7 +59,12 @@ public class ComercioRaioAvenidaRepository {
         ));
     }
 
-    // Método para buscar dados filtrados pelo id_comercio
+    /**
+     * Recupera comercios filtrados pelo id_comercio.
+     *
+     * @param idComercio idComercio o id do comercio a ser filtrado.
+     * @return uma lista de ComercioRaioAvenida contendo os comercios que correspondem ao id fornecido.
+     */
     public List<ComercioRaioAvenida> findComerciosById(Long idComercio) {
         String sql = "SELECT loc.id_comercio, loc.nome, ST_AsText(loc.localizacao) AS localizacao_texto, " +
                 "loc.raio_acao_metros, COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 200)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_200m, " +
@@ -69,19 +91,26 @@ public class ComercioRaioAvenidaRepository {
         ));
     }
 
-    // Método para buscar dados filtrados pelo id_comercio e raio de ação
-    public ComercioRaioAvenida findComercioByIdAndRaio(Long idComercio, Long raioAcaoMetros) {
+    /**
+     * Recupera comercio filtrado pelo id_comercio e raio de ação.
+     *
+     * @param idComercio        idComercio o id do comercio a ser filtrado.
+     * @param raioAcaoMetros    raioAcaoMetros o raio de ação a ser considerado na busca.
+     * @return um objeto ComercioRaioAvenida correspondente ao comercio filtrado.
+     */
+    public ComercioRaioAvenida findComercioByIdAndRaio(Long idComercio, Double raioAcaoMetros) {
         String sql = "SELECT loc.id_comercio, loc.nome, ST_AsText(loc.localizacao) AS localizacao_texto, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, ?)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_raio_acao_metros " +
                 "FROM localizacao_comercios AS loc " +
                 "JOIN \"SHP_Ruas\" AS ruas ON ruas.nm_tip_log IN ('AVENIDA', 'VIA') " +
                 "WHERE loc.id_comercio = ? " +
                 "GROUP BY loc.id_comercio, loc.nome, loc.localizacao";
+
         return jdbcTemplate.queryForObject(sql, new Object[]{raioAcaoMetros, idComercio}, (rs, rowNum) -> new ComercioRaioAvenida(
                 rs.getLong("id_comercio"),
                 rs.getString("nome"),
                 rs.getString("localizacao_texto"),
-                raioAcaoMetros,  // não será usado, mas é necessário para a entidade
+                raioAcaoMetros.longValue(), // Converte para Long para a entidade
                 0, 0, 0, 0, 0,  // valores dummy para os outros campos
                 rs.getInt("total_raio_acao_metros")
         ));
@@ -89,7 +118,12 @@ public class ComercioRaioAvenidaRepository {
 
 
 
-    // Método para buscar dados filtrados pela localização
+    /**
+     * Busca dados filtrados pela localização fornecida.
+     *
+     * @param localizacaoTexto  localizacaoTexto a localização em formato POINT(-47.4042319 -22.561447) a ser filtrada.
+     * @return uma lista de ComercioRaioAvenida contendo os resultados da busca.
+     */
     public List<ComercioRaioAvenida> findPontoRaioAvenida(String localizacaoTexto) {
         // Extrair longitude e latitude do texto POINT(-47.4042319 -22.561447)
         String[] coordinates = localizacaoTexto.replace("POINT(", "").replace(")", "").split(" ");
@@ -128,7 +162,15 @@ public class ComercioRaioAvenidaRepository {
         ));
     }
 
-    // Método para buscar dados filtrados pela localização e raio de ação
+    /**
+     * Método para buscar dados filtrados pela localização e raio de ação.
+     * Este método utiliza uma consulta SQL para contar a quantidade de ruas dentro de diferentes distâncias a partir de um ponto específico,
+     * e também calcula a quantidade de ruas dentro de um raio de ação definido pelo usuário.
+     *
+     * @param localizacaoTexto a localização em formato POINT (ex: POINT(-47.4042319 -22.561447)) a ser filtrada.
+     * @param raioAcaopersolizado o raio de ação em metros para calcular a quantidade de ruas dentro desse raio.
+     * @return uma lista de ComercioRaioAvenida contendo informações sobre o ponto de consulta e a contagem de ruas nas diferentes distâncias.
+     */
     public List<ComercioRaioAvenida> findLocalizacaoRaioAvenida(String localizacaoTexto, double raioAcaopersolizado) {
         // Extrair longitude e latitude do texto POINT(-47.4042319 -22.561447)
         String[] coordinates = localizacaoTexto.replace("POINT(", "").replace(")", "").split(" ");
@@ -167,7 +209,5 @@ public class ComercioRaioAvenidaRepository {
                 rs.getInt("total_raio_acao_metros")  // O total do raio de ação agora usa o valor passado
         ));
     }
-
-
 
 }

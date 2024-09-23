@@ -6,15 +6,38 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Repositório responsável pela interação com a tabela `localizacao_comercios`
+ * e pela execução de consultas relacionadas a comércios, suas localizações e
+ * dados de vias do OSM(Open Street Map).
+ */
 @Repository
 public class ComercioRaioViasRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     *  Construtor da classe ComercioRaioViasRepository.
+     *
+     * @param jdbcTemplate o JdbcTemplate utilizado para executar as consultas.
+     */
     public ComercioRaioViasRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Busca informações sobre o comércio com base no seu ID, incluindo a acessibilidade das vias próximas.
+     *
+     * Este método executa uma consulta SQL para recuperar dados do comércio, bem como calcular o comprimento total
+     * ponderado das vias que estão dentro do raio de ação do comércio. As vias são classificadas e ponderadas
+     * com base em sua importância.
+     *
+     * @param idComercio O ID do comércio a ser buscado. Deve ser um valor válido que exista na
+     *                   tabela de localização de comércios.
+     * @return Uma lista de ComercioRaioVias contendo as informações do comércio e a acessibilidade
+     *          das vias próximas. Se não houver comércio correspondente ao ID fornecido, a lista retornada
+     *          estará vazia.
+     */
     public List<ComercioRaioVias> findByComercioId(Long idComercio) {
         String sql = """
         WITH vias_proximas AS (
@@ -75,7 +98,17 @@ public class ComercioRaioViasRepository {
         }, idComercio);
     }
 
-
+    /**
+     * Busca informações de todos os comércios e a acessibilidade das vias próximas.
+     *
+     * Este método executa uma consulta SQL para recuperar dados de todos os comércios na tabela de localização,
+     * incluindo o comprimento total ponderado das vias que estão dentro do raio de ação de cada comércio.
+     * As vias são classificadas e ponderadas com base em sua importância para calcular a acessibilidade.
+     *
+     * @return  Uma lista de {@link ComercioRaioVias} contendo as informações de todos os comércios, incluindo
+     *          a acessibilidade das vias próximas. Se não houver comércios registrados, a lista retornada
+     *          estará vazia.
+     */
     public List<ComercioRaioVias> findAll() {
         String sql = """
             WITH vias_proximas AS (
@@ -136,7 +169,17 @@ public class ComercioRaioViasRepository {
     }
 
 
-    // calculo de acessibilidade para diferentes distancias
+    /**
+     * Busca informações sobre um comércio específico e a acessibilidade das vias em diferentes distâncias.
+     *
+     * Este método executa uma consulta SQL para recuperar dados de um comércio identificado pelo seu ID.
+     * Ele calcula o comprimento total ponderado das vias próximas com base em sua classificação,
+     * além de medir o comprimento das vias dentro de intervalos de 500, 1000, 1500, 2000 e 2500 metros.
+     *
+     * @param idComercio O ID do comércio a ser pesquisado.
+     * @return Uma lista de ComercioRaioVias contendo as informações do comércio e a acessibilidade
+     *         das vias em várias distâncias. Se o comércio não for encontrado, a lista retornada estará vazia.
+     */
     public List<ComercioRaioVias> findByComercioIdDistancia(Long idComercio) {
         String sql = """
     WITH vias_proximas AS (
@@ -237,6 +280,23 @@ public class ComercioRaioViasRepository {
         }, idComercio);
     }
 
+    /**
+     * Busca informações sobre todos os comércios e a acessibilidade das vias em diferentes distâncias.
+     *
+     * Este método executa uma consulta SQL que recupera dados de todos os comércios, calculando
+     * o comprimento total ponderado das vias próximas com base em suas classificações. Além disso,
+     * mede o comprimento das vias dentro de intervalos de 500, 1000, 1500, 2000 e 2500 metros.
+     *
+     * A acessibilidade é classificada como:
+     * - 'Excelente' para comprimento total ponderado acima de 15000 metros
+     * - 'Boa' para comprimento entre 10000 e 15000 metros
+     * - 'Média' para comprimento entre 5000 e 10000 metros
+     * - 'Ruim' para comprimento entre 0 e 5000 metros
+     * - 'Muito Ruim' para qualquer outro caso.
+     *
+     * @return Uma lista de {@link ComercioRaioVias} contendo as informações de todos os comércios
+     *         e a acessibilidade das vias em várias distâncias. Se não houver comércios, a lista retornada estará vazia.
+     */
     public List<ComercioRaioVias> findAllViasDistancia() {
         String sql = """
     WITH vias_proximas AS (
