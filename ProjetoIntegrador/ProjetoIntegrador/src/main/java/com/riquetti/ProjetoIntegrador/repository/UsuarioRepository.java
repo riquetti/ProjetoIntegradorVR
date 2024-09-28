@@ -34,7 +34,8 @@ public class UsuarioRepository {
      * @return Um objeto Usuario correspondente ao ID especificado.
      */
     public Usuario findById(Integer id) {
-        String sql = "SELECT * FROM public.usuarios WHERE id = ?";
+        String sql =
+                "SELECT * FROM public.usuarios WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, new UsuarioRowMapper());
     }
 
@@ -44,7 +45,8 @@ public class UsuarioRepository {
      * @return Uma lista de objetos Usuario contendo todos os registros na tabela usuarios.
      */
     public List<Usuario> findAll() {
-        String sql = "SELECT * FROM public.usuarios";
+        String sql =
+                "SELECT * FROM public.usuarios";
         return jdbcTemplate.query(sql, new UsuarioRowMapper());
     }
 
@@ -55,7 +57,9 @@ public class UsuarioRepository {
      * @return O número de linhas afetadas (deve ser 1 se a inserção for bem-sucedida).
      */
     public int save(Usuario usuario) {
-        String sql = "INSERT INTO public.usuarios (nome, email, senha, id_nivel_acesso, ativo) VALUES (?, ?, ?, ?, ?)";
+        String sql =
+                "INSERT INTO public.usuarios (nome, email, senha, id_nivel_acesso, ativo) " +
+                        "VALUES (?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sql, usuario.getNome(), usuario.getEmail(), usuario.getSenha(), usuario.getIdNivelAcesso(), usuario.getAtivo());
     }
 
@@ -66,7 +70,9 @@ public class UsuarioRepository {
      * @return O número de linhas afetadas (deve ser 1 se a atualização for bem-sucedida).
      */
     public int update(Usuario usuario) {
-        String sql = "UPDATE public.usuarios SET nome = ?, email = ?, senha = ?, id_nivel_acesso = ?, ativo = ? WHERE id = ?";
+        String sql =
+                "UPDATE public.usuarios SET nome = ?, email = ?, senha = ?, id_nivel_acesso = ?, ativo = ? " +
+                        "WHERE id = ?";
         return jdbcTemplate.update(sql, usuario.getNome(), usuario.getEmail(), usuario.getSenha(), usuario.getIdNivelAcesso(), usuario.getAtivo(), usuario.getId());
     }
 
@@ -77,7 +83,9 @@ public class UsuarioRepository {
      * @return O número de linhas afetadas (deve ser 1 se a exclusão for bem-sucedida).
      */
     public int delete(Integer id) {
-        String sql = "DELETE FROM public.usuarios WHERE id = ?";
+        String sql =
+                "DELETE FROM public.usuarios " +
+                        "WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 

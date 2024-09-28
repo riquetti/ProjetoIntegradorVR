@@ -7,7 +7,6 @@ import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * Representa a entidade que armazena informações sobre o nível de acesso dos usuários.
- * Esta classe é mapeada para a tabela "nivel_acesso" no banco de dados.
  */
 
 @Table(name = "nivel_acesso")
@@ -17,7 +16,7 @@ import org.springframework.data.relational.core.mapping.Table;
 public class NivelAcesso {
 
     /**
-     * ID único do nível de acesso, gerado automaticamente pelo banco de dados.
+     * ID único do nível de acesso, identificador único.
      */
     private Long idNivelAcesso;
 

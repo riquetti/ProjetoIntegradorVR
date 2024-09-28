@@ -8,7 +8,8 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.math.BigDecimal;
 
 /**
- * Entidade que representa os dados de comércio relacionados ao IBGE.
+ * Entidade que representa os dados de comércio relacionados ao IBGE
+ * por comércio dentro do raio de ação (dados IBGE).
  */
 @Table(name = "localizacao_comercios")
 @Data
@@ -23,8 +24,7 @@ public class ComercioDadosIbge {
     private Long idComercio;
 
     /**
-     * Nome do comércio.
-     * Nome atribuído ao comércio para identificação.
+     * Nome do comércio. Identificação
      */
     private String nome;
 
@@ -33,23 +33,23 @@ public class ComercioDadosIbge {
      * Armazena a representação da localização do comércio no formato Well-Known Text (WKT).
      * "POINT(-47.3990964 -22.5692409)".
      */
-    private String localizacaoTexto; // Para armazenar o resultado da função ST_AsText
+    private String localizacaoTexto;
 
     /**
-     * Raio de ação em metros.
-     * Define o alcance em metros ao redor do comércio para análises espaciais.
+     * Raio de ação em metros (área de influência do comércio).
+     * Define o alcance em metros ao redor do comércio para análises geoespaciais.
      */
     private Long raioAcaoMetros;
 
     /**
-     * Renda média de acordo com o IBGE em 2010.
-     * Representa a renda média dos residentes próximos ao comércio, de acordo com dados de 2010 do IBGE.
+     * Renda média por setor censitário, de acordo com o IBGE em 2010.
+     * Representa a renda média dos residentes dentro do raio de ação ao comércio.
      */
     private BigDecimal rendaMediaIbge2010;
 
     /**
-     * Número de moradores de acordo com o IBGE em 2010.
-     * Número de moradores nas áreas próximas ao comércio, de acordo com o censo do IBGE de 2010.
+     * Número de moradores por setor censitário, de acordo com o IBGE em 2010.
+     * Soma do número de moradores dentro do raio de ação do comércio.
      */
     private BigDecimal moradoresIbge2010;
 }

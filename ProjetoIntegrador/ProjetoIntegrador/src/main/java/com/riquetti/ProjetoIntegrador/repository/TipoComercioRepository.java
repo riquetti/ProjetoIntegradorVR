@@ -34,7 +34,8 @@ public class TipoComercioRepository {
      * @return Um objeto TipoComercio correspondente ao ID especificado.
      */
     public TipoComercio findById(Long idTipoComercio) {
-        String sql = "SELECT * FROM public.tipo_comercio WHERE id_tipo_comercio = ?";
+        String sql =
+                "SELECT * FROM public.tipo_comercio WHERE id_tipo_comercio = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{idTipoComercio}, new TipoComercioRowMapper());
     }
 
@@ -44,7 +45,8 @@ public class TipoComercioRepository {
      * @return Uma lista de objetos TipoComercio contendo todos os registros na tabela tipo_comercio.
      */
     public List<TipoComercio> findAll() {
-        String sql = "SELECT * FROM public.tipo_comercio";
+        String sql =
+                "SELECT * FROM public.tipo_comercio";
         return jdbcTemplate.query(sql, new TipoComercioRowMapper());
     }
 
@@ -55,7 +57,8 @@ public class TipoComercioRepository {
      * @return O número de linhas afetadas (deve ser 1 se a inserção for bem-sucedida).
      */
     public int save(TipoComercio tipoComercio) {
-        String sql = "INSERT INTO public.tipo_comercio (descricao) VALUES (?)";
+        String sql =
+                "INSERT INTO public.tipo_comercio (descricao) VALUES (?)";
         return jdbcTemplate.update(sql, tipoComercio.getDescricao());
     }
 
@@ -66,7 +69,8 @@ public class TipoComercioRepository {
      * @return O número de linhas afetadas (deve ser 1 se a atualização for bem-sucedida).
      */
     public int update(TipoComercio tipoComercio) {
-        String sql = "UPDATE public.tipo_comercio SET descricao = ? WHERE id_tipo_comercio = ?";
+        String sql =
+                "UPDATE public.tipo_comercio SET descricao = ? WHERE id_tipo_comercio = ?";
         return jdbcTemplate.update(sql, tipoComercio.getDescricao(), tipoComercio.getIdTipoComercio());
     }
 
@@ -77,7 +81,8 @@ public class TipoComercioRepository {
      * @return O número de linhas afetadas (deve ser 1 se a exclusão for bem-sucedida).
      */
     public int delete(Long idTipoComercio) {
-        String sql = "DELETE FROM public.tipo_comercio WHERE id_tipo_comercio = ?";
+        String sql =
+                "DELETE FROM public.tipo_comercio WHERE id_tipo_comercio = ?";
         return jdbcTemplate.update(sql, idTipoComercio);
     }
 

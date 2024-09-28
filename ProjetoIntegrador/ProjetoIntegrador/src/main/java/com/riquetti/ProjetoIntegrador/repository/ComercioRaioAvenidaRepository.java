@@ -10,6 +10,8 @@ import java.util.List;
  * Repositório responsável pela interação com a tabela `localizacao_comercios`
  * e pela execução de consultas relacionadas a comércios, suas localizações e
  * dados de vias do IBGE.
+ * Os Dados são utilizados para cálcular de contagem de vias e avenidas.
+ * No Banco de Dados foi utilizado a extensão postgis para análises espaciais.
  */
 @Repository
 public class ComercioRaioAvenidaRepository {
@@ -36,7 +38,9 @@ public class ComercioRaioAvenidaRepository {
      */
     public List<ComercioRaioAvenida> findAllComercios() {
         String sql = "SELECT loc.id_comercio, loc.nome, ST_AsText(loc.localizacao) AS localizacao_texto, " +
-                "loc.raio_acao_metros, COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 200)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_200m, " +
+                "loc.raio_acao_metros, " +
+                // Utiliza a localização, gera um buffer considerando o raio de ação, intercepta com a base de vias do IBGE e realiza a contagem
+                "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 200)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_200m, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 500)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_500m, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 1000)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_1km, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 1500)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_1_5km, " +
@@ -67,7 +71,9 @@ public class ComercioRaioAvenidaRepository {
      */
     public List<ComercioRaioAvenida> findComerciosById(Long idComercio) {
         String sql = "SELECT loc.id_comercio, loc.nome, ST_AsText(loc.localizacao) AS localizacao_texto, " +
-                "loc.raio_acao_metros, COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 200)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_200m, " +
+                "loc.raio_acao_metros," +
+                // Utiliza a localização, gera um buffer considerando o raio de ação, intercepta com a base de vias do IBGE e realiza a contagem
+                "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 200)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_200m, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 500)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_500m, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 1000)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_1km, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, 1500)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_1_5km, " +
@@ -75,7 +81,7 @@ public class ComercioRaioAvenidaRepository {
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, loc.raio_acao_metros)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_raio_acao_metros " +
                 "FROM localizacao_comercios AS loc " +
                 "JOIN \"SHP_Ruas\" AS ruas ON ruas.nm_tip_log IN ('AVENIDA', 'VIA') " +
-                "WHERE loc.id_comercio = ? " +  // Filtro por id_comercio
+                "WHERE loc.id_comercio = ? " +
                 "GROUP BY loc.id_comercio, loc.nome, loc.localizacao, loc.raio_acao_metros";
         return jdbcTemplate.query(sql, new Object[]{idComercio}, (rs, rowNum) -> new ComercioRaioAvenida(
                 rs.getLong("id_comercio"),
@@ -100,6 +106,7 @@ public class ComercioRaioAvenidaRepository {
      */
     public ComercioRaioAvenida findComercioByIdAndRaio(Long idComercio, Double raioAcaoMetros) {
         String sql = "SELECT loc.id_comercio, loc.nome, ST_AsText(loc.localizacao) AS localizacao_texto, " +
+                // Utiliza a localização, gera um buffer considerando o raio de ação, intercepta com a base de vias do IBGE e realiza a contagem
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(loc.localizacao::geography, ?)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_raio_acao_metros " +
                 "FROM localizacao_comercios AS loc " +
                 "JOIN \"SHP_Ruas\" AS ruas ON ruas.nm_tip_log IN ('AVENIDA', 'VIA') " +
@@ -115,8 +122,6 @@ public class ComercioRaioAvenidaRepository {
                 rs.getInt("total_raio_acao_metros")
         ));
     }
-
-
 
     /**
      * Busca dados filtrados pela localização fornecida.
@@ -138,6 +143,7 @@ public class ComercioRaioAvenidaRepository {
                 "0 AS id_comercio, " +  // Definindo id_comercio como 0
                 "'Ponto de consulta' AS nome, " +  // Definindo nome como 'Ponto de consulta'
                 "ST_AsText(p.geom) AS localizacao_texto, " +  // Retorna a localização do ponto
+                // Utiliza a localização, gera um buffer considerando o raio de ação, intercepta com a base de vias do IBGE e realiza a contagem
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(p.geom::geography, 200)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_200m, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(p.geom::geography, 500)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_500m, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(p.geom::geography, 1000)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_1km, " +
@@ -145,7 +151,7 @@ public class ComercioRaioAvenidaRepository {
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(p.geom::geography, 2000)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_2km " +
                 "FROM ponto p, \"SHP_Ruas\" AS ruas " +
                 "WHERE ruas.nm_tip_log IN ('AVENIDA', 'VIA') " +
-                "GROUP BY p.geom";  // Adicione p.geom na cláusula GROUP BY
+                "GROUP BY p.geom";
 
         // Executar a consulta com os parâmetros de latitude e longitude
         return jdbcTemplate.query(sql, new Object[]{longitude, latitude}, (rs, rowNum) -> new ComercioRaioAvenida(
@@ -164,8 +170,6 @@ public class ComercioRaioAvenidaRepository {
 
     /**
      * Método para buscar dados filtrados pela localização e raio de ação.
-     * Este método utiliza uma consulta SQL para contar a quantidade de ruas dentro de diferentes distâncias a partir de um ponto específico,
-     * e também calcula a quantidade de ruas dentro de um raio de ação definido pelo usuário.
      *
      * @param localizacaoTexto a localização em formato POINT (ex: POINT(-47.4042319 -22.561447)) a ser filtrada.
      * @param raioAcaopersolizado o raio de ação em metros para calcular a quantidade de ruas dentro desse raio.
@@ -185,6 +189,7 @@ public class ComercioRaioAvenidaRepository {
                 "0 AS id_comercio, " +  // Definindo id_comercio como 0
                 "'Ponto de consulta' AS nome, " +  // Definindo nome como 'Ponto de consulta'
                 "ST_AsText(p.geom) AS localizacao_texto, " +  // Retorna a localização do ponto
+                // Utiliza a localização, gera um buffer considerando o raio de ação, intercepta com a base de vias do IBGE e realiza a contagem
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(p.geom::geography, 200)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_200m, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(p.geom::geography, 500)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_500m, " +
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(p.geom::geography, 1000)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_1km, " +
@@ -193,7 +198,7 @@ public class ComercioRaioAvenidaRepository {
                 "COUNT(CASE WHEN ST_Intersects(ST_Buffer(p.geom::geography, ?)::geometry, ruas.geom::geometry) THEN 1 ELSE NULL END) AS total_raio_acao_metros " +
                 "FROM ponto p, \"SHP_Ruas\" AS ruas " +
                 "WHERE ruas.nm_tip_log IN ('AVENIDA', 'VIA') " +
-                "GROUP BY p.geom";  // Adicione p.geom na cláusula GROUP BY
+                "GROUP BY p.geom";
 
         // Executar a consulta com os parâmetros de latitude, longitude e raio de ação
         return jdbcTemplate.query(sql, new Object[]{longitude, latitude, raioAcaopersolizado}, (rs, rowNum) -> new ComercioRaioAvenida(

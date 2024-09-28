@@ -39,9 +39,12 @@ dependencies {
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
 	implementation 'org.hibernate.validator:hibernate-validator:7.0.1.Final'
 	implementation 'javax.validation:validation-api:2.0.1.Final'
-	implementation 'org.glassfish:javax.el:3.0.0' // necessário para suporte a EL
+	implementation 'org.glassfish:javax.el:3.0.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

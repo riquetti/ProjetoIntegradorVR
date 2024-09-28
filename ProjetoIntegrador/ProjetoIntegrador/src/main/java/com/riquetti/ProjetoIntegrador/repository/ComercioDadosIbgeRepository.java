@@ -9,12 +9,24 @@ import java.util.List;
 
 /**
  * Repositório responsável pela interação com a tabela `localizacao_comercios`
- * e pela execução de consultas relacionadas a comércios, suas localizações e
- * cruzamento com os dados do IBGE.
+ * e pela execução de consultas relacionadas a comércios, suas localizações e cruzamento com os dados do IBGE.
+ * Renda Média - Cálculo da médida de renda por setor censitário, utiliza o raio de ação
+ * para delimitar a região a ser análisada
+ * Númeor de moradores - Cálculo da soma de moradores por setor censitário,
+ * utiliza o raio de ação para delimitar a região a ser análisada.
+ * No Banco de Dados foi utilizado a extensão postgis para análises espaciais.
  */
 @Repository
 public class ComercioDadosIbgeRepository {
+
+
     private final JdbcTemplate jdbcTemplate;
+
+    /**
+     * Construtor para injeção de dependência do JdbcTemplate.
+     *
+     * @param jdbcTemplate o JdbcTemplate utilizado para executar as consultas.
+     */
 
     public ComercioDadosIbgeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,7 +45,7 @@ public class ComercioDadosIbgeRepository {
                         "    loc.nome, " +
                         "    ST_AsText(loc.localizacao) AS localizacao_texto, " +
                         "    loc.raio_acao_metros, " +
-                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS Renda_Media_IBGE2010, " +
+                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS Renda_Media_IBGE2010, " + // Média de renda dos moradores do setor censitário dentro do raio
                         "    SUM(basico.\"V002\") AS moradores_ibge2010 " + // Soma dos moradores do setor censitário dentro do raio
                         "FROM " +
                         "    \"localizacao_comercios\" AS loc " +
@@ -42,14 +54,14 @@ public class ComercioDadosIbgeRepository {
                         "ON " +
                         "    ST_Intersects(" + // Verifica se o setor intercepta o buffer (raio de ação)
                         "        ST_Buffer(loc.localizacao::geography, loc.raio_acao_metros)::geometry, " +
-                        "        ibge.geom::geometry" +
+                        "        ibge.geom::geometry" +  // Buffer com o raio
                         "    ) " +
                         "JOIN " +
                         "    \"Basico_Limeira_IBGE2010\" AS basico " +
                         "ON " +
                         "    ibge.cd_geocodi = basico.\"Cod_setor\" " +
                         "WHERE " +
-                        "    loc.id_comercio = ? " + // Filtro pelo id_comercio
+                        "    loc.id_comercio = ? " +
                         "GROUP BY " +
                         "    loc.id_comercio, " +
                         "    loc.nome, " +
@@ -63,7 +75,7 @@ public class ComercioDadosIbgeRepository {
             comercio.setLocalizacaoTexto(rs.getString("localizacao_texto"));
             comercio.setRaioAcaoMetros(rs.getLong("raio_acao_metros"));
             comercio.setRendaMediaIbge2010(rs.getBigDecimal("Renda_Media_IBGE2010"));
-            comercio.setMoradoresIbge2010(rs.getBigDecimal("moradores_ibge2010")); // Soma dos moradores do censo
+            comercio.setMoradoresIbge2010(rs.getBigDecimal("moradores_ibge2010"));
             return comercio;
         });
     }
@@ -81,16 +93,16 @@ public class ComercioDadosIbgeRepository {
                         "    loc.id_comercio, " +
                         "    loc.nome, " +
                         "    ST_AsText(loc.localizacao) AS localizacao_texto, " +
-                        "    ? AS raio_acao_metros, " + // Usando o valor passado como raio de ação
-                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS Renda_Media_IBGE2010, " +
+                        "    ? AS raio_acao_metros, " +
+                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS Renda_Media_IBGE2010, " + // Média de renda dos moradores do setor censitário dentro do raio
                         "    SUM(basico.\"V002\") AS moradores_ibge2010 " + // Soma dos moradores do setor censitário dentro do raio
                         "FROM " +
                         "    \"localizacao_comercios\" AS loc " +
                         "JOIN " +
                         "    \"IBGE_Limeira_2010\" AS ibge " +
                         "ON " +
-                        "    ST_Intersects(" +
-                        "        ST_Buffer(loc.localizacao::geography, ?)::geometry, " + // Buffer com o raio passado
+                        "    ST_Intersects(" + // Verifica se o setor intercepta o buffer (raio de ação)
+                        "        ST_Buffer(loc.localizacao::geography, ?)::geometry, " + // Buffer com o raio
                         "        ibge.geom::geometry" +
                         "    ) " +
                         "JOIN " +
@@ -111,7 +123,7 @@ public class ComercioDadosIbgeRepository {
             comercio.setLocalizacaoTexto(rs.getString("localizacao_texto"));
             comercio.setRaioAcaoMetros(rs.getLong("raio_acao_metros"));
             comercio.setRendaMediaIbge2010(rs.getBigDecimal("Renda_Media_IBGE2010"));
-            comercio.setMoradoresIbge2010(rs.getBigDecimal("moradores_ibge2010")); // Soma dos moradores
+            comercio.setMoradoresIbge2010(rs.getBigDecimal("moradores_ibge2010"));
             return comercio;
         });
     }
@@ -128,15 +140,15 @@ public class ComercioDadosIbgeRepository {
                         "    loc.nome, " +
                         "    ST_AsText(loc.localizacao) AS localizacao_texto, " +
                         "    loc.raio_acao_metros, " +
-                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS renda_media_ibge2010, " +
+                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS renda_media_ibge2010, " + // Média de renda dos moradores do setor censitário dentro do raio
                         "    ROUND(SUM(basico.\"V002\")::numeric, 2) AS moradores_ibge2010 " +  // Adicionando a soma de moradores
                         "FROM " +
                         "    \"localizacao_comercios\" AS loc " +
                         "JOIN " +
                         "    \"IBGE_Limeira_2010\" AS ibge " +
                         "ON " +
-                        "    ST_Intersects( " +
-                        "        ST_Buffer(loc.localizacao::geography, loc.raio_acao_metros)::geometry, " +
+                        "    ST_Intersects( " + // Verifica se o setor intercepta o buffer (raio de ação)
+                        "        ST_Buffer(loc.localizacao::geography, loc.raio_acao_metros)::geometry, " + // Buffer com o raio
                         "        ibge.geom::geometry " +
                         "    ) " +
                         "JOIN " +
@@ -185,15 +197,15 @@ public class ComercioDadosIbgeRepository {
                         "    loc.nome,\n" +
                         "    ST_AsText(loc.localizacao) AS localizacao_texto,\n" +
                         "    ? AS raio_acao_metros,\n" +
-                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS Renda_Media_IBGE2010, \n" +
+                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS Renda_Media_IBGE2010, \n" + // Média de renda dos moradores do setor censitário dentro do raio
                         "    SUM(basico.\"V002\") AS moradores_ibge2010 \n" + // Soma dos moradores do setor censitário dentro do raio
                         "FROM \n" +
                         "    \"localizacao_comercios\" AS loc\n" +
                         "JOIN \n" +
                         "    \"IBGE_Limeira_2010\" AS ibge\n" +
                         "ON \n" +
-                        "    ST_Intersects(\n" +
-                        "        ST_Buffer(loc.localizacao::geography, ?)::geometry, \n" +
+                        "    ST_Intersects(\n" + // Verifica se o setor intercepta o buffer (raio de ação)
+                        "        ST_Buffer(loc.localizacao::geography, ?)::geometry, \n" + // Buffer com o raio
                         "        ibge.geom::geometry\n" +
                         "    )\n" +
                         "JOIN \n" +
@@ -212,7 +224,7 @@ public class ComercioDadosIbgeRepository {
             loc.setLocalizacaoTexto(rs.getString("localizacao_texto"));
             loc.setRaioAcaoMetros(rs.getLong("raio_acao_metros"));
             loc.setRendaMediaIbge2010(rs.getBigDecimal("Renda_Media_IBGE2010"));
-            loc.setMoradoresIbge2010(rs.getBigDecimal("moradores_ibge2010")); // Soma dos moradores
+            loc.setMoradoresIbge2010(rs.getBigDecimal("moradores_ibge2010"));
             return loc;
         });
     }
@@ -228,7 +240,7 @@ public class ComercioDadosIbgeRepository {
                 "SELECT \n" +
                         "    ST_AsText(ST_SetSRID(ST_GeomFromText(?), 4326)) AS localizacao_texto, \n" +
                         "    ? AS raio_acao_metros,\n" +
-                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS Renda_Media_IBGE2010,\n" +
+                        "    ROUND(AVG(basico.\"V005\")::numeric, 2) AS Renda_Media_IBGE2010,\n" + // Média de renda dos moradores do setor censitário dentro do raio
                         "    SUM(basico.\"V002\") AS moradores_ibge2010 \n" + // Soma dos moradores do setor censitário dentro do raio
                         "FROM \n" +
                         "    \"IBGE_Limeira_2010\" AS ibge\n" +
@@ -237,9 +249,9 @@ public class ComercioDadosIbgeRepository {
                         "ON \n" +
                         "    ibge.cd_geocodi = basico.\"Cod_setor\"\n" +
                         "WHERE \n" +
-                        "    ST_Intersects(\n" +
+                        "    ST_Intersects(\n" + // Verifica se o setor intercepta o buffer (raio de ação)
                         "        ST_Buffer(ST_SetSRID(ST_GeomFromText(?), 4326)::geography, ?)::geometry, \n" +
-                        "        ibge.geom::geometry\n" +
+                        "        ibge.geom::geometry\n" + // Buffer com o raio
                         "    )\n" +
                         "GROUP BY \n" +
                         "    localizacao_texto, \n" +
@@ -254,7 +266,7 @@ public class ComercioDadosIbgeRepository {
             loc.setLocalizacaoTexto(rs.getString("localizacao_texto"));
             loc.setRaioAcaoMetros(rs.getLong("raio_acao_metros"));
             loc.setRendaMediaIbge2010(rs.getBigDecimal("Renda_Media_IBGE2010"));
-            loc.setMoradoresIbge2010(rs.getBigDecimal("moradores_ibge2010")); // Soma dos moradores
+            loc.setMoradoresIbge2010(rs.getBigDecimal("moradores_ibge2010"));
 
             return loc;
         });

@@ -35,6 +35,7 @@ public class Concorrente {
 
     /**
      * Localização geográfica do comércio concorrente em formato WKT (Well-Known Text).
+     * "POINT(-47.3990964 -22.5692409)".
      */
     private String localizacao;
 }

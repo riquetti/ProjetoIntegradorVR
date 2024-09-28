@@ -91,8 +91,8 @@ public class ComercioRaioAvenidaController {
      */
     @GetMapping("/comercio/{idComercio}/raio/{raioAcaoMetros}")
     public ResponseEntity<?> getComercioByIdAndRaio(
-            @PathVariable String idComercio, // Alterado para String para validação de entrada
-            @PathVariable String raioAcaoMetros) { // Alterado para String para validação de entrada
+            @PathVariable String idComercio,
+            @PathVariable String raioAcaoMetros) {
 
         // Validações para o ID do comércio
         try {

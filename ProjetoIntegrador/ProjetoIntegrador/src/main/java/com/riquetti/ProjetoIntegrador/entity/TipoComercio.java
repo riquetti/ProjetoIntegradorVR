@@ -8,6 +8,7 @@ import org.springframework.data.relational.core.mapping.Table;
 /**
  * Representa a entidade que armazena informações sobre os tipos de comércio.
  * Esta classe é utilizada para categorizar diferentes tipos de estabelecimentos comerciais no sistema.
+ *
  */
 @Table(name = "tipo_comercio")
 @Data

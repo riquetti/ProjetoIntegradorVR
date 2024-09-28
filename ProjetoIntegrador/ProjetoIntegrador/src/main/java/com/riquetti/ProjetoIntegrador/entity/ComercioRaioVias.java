@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 /**
  *  Entidade que representa as localizações dos comércios,
  *  relacionadas ao raio de ação e à acessibilidade de vias ao redor do comércio.
+ * Base OSM (open street map)
  *
  */
 @Table(name = "localizacao_comercios")
@@ -35,22 +36,27 @@ public class ComercioRaioVias {
     private String descricao;
 
     /**
-     * Raio de ação do comércio em metros (área de influência do comércio).
+     * Raio de ação em metros (área de influência do comércio).
+     * Define o alcance em metros ao redor do comércio para análises geoespaciais.
      */
     private Long raioAcaoMetros;
 
     /**
      * Comprimento total das vias ao redor do comércio ponderado.
+     * Cálculo do comprimento das vias dentro do raio de ação.
+     * Atribui peso para diferentes tipos de vias.
      */
     private BigDecimal comprimentoTotalPonderado;
 
     /**
      * Descrição da acessibilidade das vias ao redor do comércio.
+     * Classificação da acessibilidade em muito ruim, ruim, média, boa e Excelente
      */
     private String acessibilidade;
 
     /**
      * Localização geográfica do comércio em formato WKT (Well-Known Text).
+     * "POINT(-47.3990964 -22.5692409)".
      */
     private String localizacao;
 

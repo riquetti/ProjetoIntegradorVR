@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 public class LocalizacaoComercio {
 
     /**
-     * ID do comércio, gerado automaticamente pelo banco de dados.
+     * ID do comércio Identificador único do comércio.
      */
     private long idComercio;
 
@@ -34,16 +34,19 @@ public class LocalizacaoComercio {
 
     /**
      * ID do tipo de comércio, relacionando com a entidade TipoComercio.
+     * Identifica o tipo do comercio armazenado.
      */
     private long idTipoComercio;
 
     /**
-     * Raio de ação em metros para o comércio.
+     * Raio de ação em metros (área de influência do comércio).
+     *
      */
     private BigDecimal raioAcaoMetros;
 
     /**
-     * Localização geográfica do comércio no formato WKT (Well-Known Text). Exemplo: "POINT(-47.3990964 -22.5692409)".
+     * Localização geográfica do comércio no formato WKT (Well-Known Text).
+     * Exemplo: "POINT(-47.3990964 -22.5692409)".
      */
     private String localizacao;
 

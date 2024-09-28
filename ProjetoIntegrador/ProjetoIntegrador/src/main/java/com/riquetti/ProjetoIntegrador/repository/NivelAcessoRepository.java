@@ -35,7 +35,8 @@ public class NivelAcessoRepository {
      * @return Um objeto NivelAcesso correspondente ao ID especificado.
      */
     public NivelAcesso findById(Long idNivelAcesso) {
-        String sql = "SELECT * FROM public.nivel_acesso WHERE id_nivel_acesso = ?";
+        String sql =
+                "SELECT * FROM public.nivel_acesso WHERE id_nivel_acesso = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{idNivelAcesso}, new NivelAcessoRowMapper());
     }
 
@@ -45,7 +46,8 @@ public class NivelAcessoRepository {
      * @return Uma lista de objetos NivelAcesso contendo todos os registros na tabela nivel_acesso.
      */
     public List<NivelAcesso> findAll() {
-        String sql = "SELECT * FROM public.nivel_acesso";
+        String sql =
+                "SELECT * FROM public.nivel_acesso";
         return jdbcTemplate.query(sql, new NivelAcessoRowMapper());
     }
 
@@ -56,7 +58,8 @@ public class NivelAcessoRepository {
      * @return O número de linhas afetadas (deve ser 1 se a inserção for bem-sucedida).
      */
     public int save(NivelAcesso nivelAcesso) {
-        String sql = "INSERT INTO public.nivel_acesso (nivel_acesso) VALUES (?)";
+        String sql =
+                "INSERT INTO public.nivel_acesso (nivel_acesso) VALUES (?)";
         return jdbcTemplate.update(sql, nivelAcesso.getNivelAcesso());
     }
 
@@ -67,7 +70,8 @@ public class NivelAcessoRepository {
      * @return O número de linhas afetadas (deve ser 1 se a atualização for bem-sucedida).
      */
     public int update(NivelAcesso nivelAcesso) {
-        String sql = "UPDATE public.nivel_acesso SET nivel_acesso = ? WHERE id_nivel_acesso = ?";
+        String sql =
+                "UPDATE public.nivel_acesso SET nivel_acesso = ? WHERE id_nivel_acesso = ?";
         return jdbcTemplate.update(sql, nivelAcesso.getNivelAcesso(), nivelAcesso.getIdNivelAcesso());
     }
 
@@ -78,7 +82,8 @@ public class NivelAcessoRepository {
      * @return O número de linhas afetadas (deve ser 1 se a exclusão for bem-sucedida).
      */
     public int delete(Long idNivelAcesso) {
-        String sql = "DELETE FROM public.nivel_acesso WHERE id_nivel_acesso = ?";
+        String sql =
+                "DELETE FROM public.nivel_acesso WHERE id_nivel_acesso = ?";
         return jdbcTemplate.update(sql, idNivelAcesso);
     }
 

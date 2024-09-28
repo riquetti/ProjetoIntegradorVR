@@ -5,6 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Table;
 
+/**
+ * Representa a entidade que armazena informações sobre os usuários.
+ * Esta classe é utilizada para armazenar as informações do usuário para efetuar o login na aplicação.
+ */
+
 @Table(name = "usuarios")
 @Data
 @AllArgsConstructor

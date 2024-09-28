@@ -36,7 +36,8 @@ public class LocalizacaoComercioRepository {
      * @return O objeto LocalizacaoComercio correspondente ao ID fornecido.
      */
     public LocalizacaoComercio findById(Long idComercio) {
-        String sql = "SELECT id_comercio, nome, descricao, id_tipo_comercio, raio_acao_metros, " +
+        String sql =
+                "SELECT id_comercio, nome, descricao, id_tipo_comercio, raio_acao_metros, " +
                 "ST_AsText(localizacao) AS localizacao_texto " +
                 "FROM public.localizacao_comercios WHERE id_comercio = ?";
 
@@ -49,7 +50,8 @@ public class LocalizacaoComercioRepository {
      * @return Uma lista de todos os objetos LocalizacaoComercio.
      */
     public List<LocalizacaoComercio> findAll() {
-        String sql = "SELECT id_comercio, nome, descricao, id_tipo_comercio, raio_acao_metros, " +
+        String sql =
+                "SELECT id_comercio, nome, descricao, id_tipo_comercio, raio_acao_metros, " +
                 "ST_AsText(localizacao) AS localizacao_texto " +
                 "FROM public.localizacao_comercios";
         return jdbcTemplate.query(sql, new LocalizacaoComercioRowMapper());
@@ -62,7 +64,8 @@ public class LocalizacaoComercioRepository {
      * @return O número de linhas afetadas pela operação.
      */
     public int save(LocalizacaoComercio comercio) {
-        String sql = "INSERT INTO public.localizacao_comercios (nome, descricao, id_tipo_comercio, raio_acao_metros, localizacao) " +
+        String sql =
+                "INSERT INTO public.localizacao_comercios (nome, descricao, id_tipo_comercio, raio_acao_metros, localizacao) " +
                 "VALUES (?, ?, ?, ?, ST_GeomFromText(?, 4326))";
         return jdbcTemplate.update(sql, comercio.getNome(), comercio.getDescricao(),
                 comercio.getIdTipoComercio(), comercio.getRaioAcaoMetros(), comercio.getLocalizacao().toString());
@@ -105,8 +108,6 @@ public class LocalizacaoComercioRepository {
             comercio.setDescricao(rs.getString("descricao"));
             comercio.setIdTipoComercio(rs.getLong("id_tipo_comercio"));
             comercio.setRaioAcaoMetros(rs.getBigDecimal("raio_acao_metros"));
-
-            // Mapeando a localização como String (WKT)
             comercio.setLocalizacao(rs.getString("localizacao_texto"));
 
             return comercio;

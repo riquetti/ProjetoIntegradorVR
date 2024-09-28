@@ -11,12 +11,12 @@ import java.math.BigDecimal;
  * @param localizacaoTexto      Localização em formato texto (WKT).
  *                              Contém a representação da localização do comércio no
  *                              formato Well-Known Text (WKT) "POINT(-47.3990964 -22.5692409)".
- * @param raioAcaoMetros        Raio de ação em metros.
+ * @param raioAcaoMetros        Raio de ação em metros (área de influência do comércio).
  *                              Define o alcance em metros ao redor do comércio para fins de análise geoespacial.
- * @param rendaMediaIbge2010    Renda média de acordo com o IBGE em 2010.
- *                              Representa a renda média dos moradores dentro do raio de ação do comércio.
- * @param moradoresIbge2010     Número de moradores de acordo com o IBGE em 2010.
- *                              Número de residentes dentro do raio de ação do comércio.
+ * @param rendaMediaIbge2010    Renda média por setor censitário, de acordo com o IBGE em 2010.
+ *                              Representa a renda média dos residentes dentro do raio de ação ao comércio.
+ * @param moradoresIbge2010     Número de moradores por setor censitário, de acordo com o IBGE em 2010.
+ *                              Soma do número de moradores dentro do raio de ação do comércio.
  */
 public record ComercioDadosIbgeDTO(
 

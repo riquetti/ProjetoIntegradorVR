@@ -9,9 +9,8 @@ import org.springframework.data.relational.core.mapping.Table;
 /**
  * Classe que representa um comércio e sua localização, incluindo informações sobre
  * o raio de ação e a contagem de comércios em diferentes distâncias.
+ * Base de ruas e avenidas IBGE.
  *
- * A classe é mapeada para a tabela "localizacao_comercios" no banco de dados.
- * Utiliza anotações do Lombok para reduzir a boilerplate code.
  */
 @Table(name = "localizacao_comercios")
 @Data
@@ -28,35 +27,36 @@ public class ComercioRaioAvenida {
      */
     private String nome;
     /**
-     * Representa a localização como WKT (Well-Known Text).
+     * A localização do comércio em formato Well-Known Text (WKT) "POINT(-47.3990964 -22.5692409)".
      */
     private String localizacaoTexto;
     /**
      * Raio de ação em metros (área de influência do comércio).
+     * Define o alcance em metros ao redor do comércio para análises geoespaciais.
      */
     private Long raioAcaoMetros;
     /**
-     * Contagem de comércios em um raio de 200 metros.
+     * Contagem de vias e avenidas de comércios em um raio de 200 metros.
      */
     private int total200m;
     /**
-     * Contagem de comércios em um raio de 500 metros.
+     * Contagem de vias e avenidas de comércios em um raio de 500 metros.
      */
     private int total500m;
     /**
-     * Contagem de comércios em um raio de 1 quilômetro.
+     * Contagem de vias e avenidas de comércios em um raio de 1 quilômetro.
      */
     private int total1km;
     /**
-     * Contagem de comércios em um raio de 1,5 quilômetros.
+     * Contagem de vias e avenidas de comércios em um raio de 1,5 quilômetros.
      */
     private int total1_5km;
     /**
-     * Contagem de comércios em um raio de 2 quilômetros.
+     * Contagem de vias e avenidas de comércios em um raio de 2 quilômetros.
      */
     private int total2km;
     /**
-     * Contagem de comércios no raio de ação definido.
+     * Contagem de vias e avenias no raio de ação definido.
      */
     private int totalRaioAcaoMetros;
 

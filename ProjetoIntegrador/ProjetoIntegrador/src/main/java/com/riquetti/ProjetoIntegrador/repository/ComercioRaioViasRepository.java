@@ -10,6 +10,21 @@ import java.util.List;
  * Repositório responsável pela interação com a tabela `localizacao_comercios`
  * e pela execução de consultas relacionadas a comércios, suas localizações e
  * dados de vias do OSM(Open Street Map).
+ * Os dados são utilizados para calcular o comprimento das vias da base.
+ *
+ * Comprimento Ponderado - utiliza o comprimento das vias, classificação (as classes representam a importância e velocidade)
+ * e são atribuidos pesos diferentes para cada tipo de via.
+ * 'motorway', 'trunk', 'primary', 'primary_link' - peso 4
+ * 'secondary', 'secondary_link' - peso 3
+ * 'tertiary', 'tertiary_link' - peso 2
+ * outras tipos - peso 1
+ * O resultado é divido por 10, obtem no calculo ponderado.
+ *
+ * Com isso o resultado é classificado em Muito Ruim (0 até 1000), Ruim(1000 até 5000),
+ * Médio(5000 até 10000), Boa(10000 até 15000) e Excelente(> 15000).
+ *
+ * Comprimento - Cálculo considera o comprimento das vias somadas dentro do raio de ação.
+ * No Banco de Dados foi utilizado a extensão postgis para análises espaciais.
  */
 @Repository
 public class ComercioRaioViasRepository {
@@ -29,8 +44,8 @@ public class ComercioRaioViasRepository {
      * Busca informações sobre o comércio com base no seu ID, incluindo a acessibilidade das vias próximas.
      *
      * Este método executa uma consulta SQL para recuperar dados do comércio, bem como calcular o comprimento total
-     * ponderado das vias que estão dentro do raio de ação do comércio. As vias são classificadas e ponderadas
-     * com base em sua importância.
+     * ponderado das vias que estão dentro do raio de ação do comércio. As vias são ponderadas
+     * com base em sua importância e classificadas.
      *
      * @param idComercio O ID do comércio a ser buscado. Deve ser um valor válido que exista na
      *                   tabela de localização de comércios.
@@ -72,13 +87,13 @@ public class ComercioRaioViasRepository {
           nome,
           descricao,
           raio_acao_metros,
-          localizacao,  -- Incluído aqui como string
+          localizacao,
           comprimento_total_ponderado,
           CASE 
             WHEN comprimento_total_ponderado > 15000 THEN 'Excelente'
             WHEN comprimento_total_ponderado BETWEEN 10000 AND 15000 THEN 'Boa'
             WHEN comprimento_total_ponderado BETWEEN 5000 AND 10000 THEN 'Média'
-            WHEN comprimento_total_ponderado BETWEEN 0 AND 5000 THEN 'Ruim'
+            WHEN comprimento_total_ponderado BETWEEN 1000 AND 5000 THEN 'Ruim'
             ELSE 'Muito Ruim'
           END AS acessibilidade
         FROM 
@@ -142,13 +157,13 @@ public class ComercioRaioViasRepository {
               nome,
               descricao,
               raio_acao_metros,
-              localizacao,  -- Selecionando a localização em formato de string
+              localizacao,
               comprimento_total_ponderado,
               CASE 
                 WHEN comprimento_total_ponderado > 15000 THEN 'Excelente'
                 WHEN comprimento_total_ponderado BETWEEN 10000 AND 15000 THEN 'Boa'
                 WHEN comprimento_total_ponderado BETWEEN 5000 AND 10000 THEN 'Média'
-                WHEN comprimento_total_ponderado BETWEEN 0 AND 5000 THEN 'Ruim'
+                WHEN comprimento_total_ponderado BETWEEN 1000 AND 5000 THEN 'Ruim'
                 ELSE 'Muito Ruim'
               END AS acessibilidade
             FROM 
@@ -161,7 +176,7 @@ public class ComercioRaioViasRepository {
             entity.setNome(rs.getString("nome"));
             entity.setDescricao(rs.getString("descricao"));
             entity.setRaioAcaoMetros(rs.getLong("raio_acao_metros"));
-            entity.setLocalizacao(rs.getString("localizacao"));  // Mapeando a localização convertida
+            entity.setLocalizacao(rs.getString("localizacao"));
             entity.setComprimentoTotalPonderado(rs.getBigDecimal("comprimento_total_ponderado"));
             entity.setAcessibilidade(rs.getString("acessibilidade"));
             return entity;
@@ -255,7 +270,7 @@ public class ComercioRaioViasRepository {
         WHEN comprimento_total_ponderado > 15000 THEN 'Excelente'
         WHEN comprimento_total_ponderado BETWEEN 10000 AND 15000 THEN 'Boa'
         WHEN comprimento_total_ponderado BETWEEN 5000 AND 10000 THEN 'Média'
-        WHEN comprimento_total_ponderado BETWEEN 0 AND 5000 THEN 'Ruim'
+        WHEN comprimento_total_ponderado BETWEEN 1000 AND 5000 THEN 'Ruim'
         ELSE 'Muito Ruim'
       END AS acessibilidade
     FROM 
@@ -305,7 +320,7 @@ public class ComercioRaioViasRepository {
         comercio.nome,
         comercio.descricao,
         comercio.raio_acao_metros,
-        ST_AsText(comercio.localizacao) AS localizacao,  
+        ST_AsText(comercio.localizacao) AS localizacao,  -- Convertendo a localização para texto
         SUM(
           CASE 
             WHEN vias.fclass IN ('motorway', 'trunk', 'primary', 'primary_link') THEN ST_Length(ST_Intersection(vias.geom::geography, ST_Buffer(comercio.localizacao::geography, comercio.raio_acao_metros))) * 4 / 10
@@ -371,7 +386,7 @@ public class ComercioRaioViasRepository {
         WHEN comprimento_total_ponderado > 15000 THEN 'Excelente'
         WHEN comprimento_total_ponderado BETWEEN 10000 AND 15000 THEN 'Boa'
         WHEN comprimento_total_ponderado BETWEEN 5000 AND 10000 THEN 'Média'
-        WHEN comprimento_total_ponderado BETWEEN 0 AND 5000 THEN 'Ruim'
+        WHEN comprimento_total_ponderado BETWEEN 1000 AND 5000 THEN 'Ruim'
         ELSE 'Muito Ruim'
       END AS acessibilidade
     FROM 
