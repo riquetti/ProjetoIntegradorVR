@@ -1,7 +1,6 @@
 package com.riquetti.ProjetoIntegrador.service;
 
 import com.riquetti.ProjetoIntegrador.entity.ComercioDadosIbge;
-import com.riquetti.ProjetoIntegrador.service.ComercioDadosIbgeService;
 import com.riquetti.ProjetoIntegrador.repository.ComercioDadosIbgeRepository;
 import com.riquetti.ProjetoIntegrador.dto.ComercioDadosIbgeDTO;
 import com.riquetti.ProjetoIntegrador.exception.ResourceNotFoundException;
@@ -19,8 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ComercioDadosIbgeServiceTest {
-
-
 
     @Mock
     private ComercioDadosIbgeRepository repository;
@@ -41,12 +38,12 @@ public class ComercioDadosIbgeServiceTest {
         ComercioDadosIbge comercio1 = new ComercioDadosIbge();
         comercio1.setIdComercio(1L);
         comercio1.setNome("Comércio A");
-        // Defina outros atributos conforme necessário
+
 
         ComercioDadosIbge comercio2 = new ComercioDadosIbge();
         comercio2.setIdComercio(2L);
         comercio2.setNome("Comércio B");
-        // Defina outros atributos conforme necessário
+
 
         // Adicionar os comercios à lista
         comercios.add(comercio1);

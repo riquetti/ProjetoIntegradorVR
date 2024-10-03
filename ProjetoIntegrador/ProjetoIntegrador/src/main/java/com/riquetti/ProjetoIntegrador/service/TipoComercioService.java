@@ -2,11 +2,14 @@ package com.riquetti.ProjetoIntegrador.service;
 
 import com.riquetti.ProjetoIntegrador.dto.TipoComercioDTO;
 import com.riquetti.ProjetoIntegrador.entity.TipoComercio;
+import com.riquetti.ProjetoIntegrador.exception.EntityNotFoundException;
 import com.riquetti.ProjetoIntegrador.mapper.TipoComercioMapper;
 import com.riquetti.ProjetoIntegrador.repository.TipoComercioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,14 +36,16 @@ public class TipoComercioService {
     /**
      * Recupera os detalhes de um tipo de comércio específico com base em seu ID.
      *
-     * @param idTipoComercio O ID do tipo de comércio a ser recuperado.
+     * @param id O ID do tipo de comércio a ser recuperado.
      * @return O DTO contendo as informações do tipo de comércio.
      * @throws IllegalArgumentException Se o ID for nulo ou inválido.
      */
-    public TipoComercioDTO findById(Long idTipoComercio) {
-        validateIdTipoComercio(idTipoComercio);
-        TipoComercio tipoComercio = tipoComercioRepository.findById(idTipoComercio);
-        return tipoComercioMapper.toDTO(tipoComercio);
+    public TipoComercioDTO findById(Long id) {
+        validateIdTipoComercio(id);
+        Optional<TipoComercio> tipoComercioOptional = tipoComercioRepository.findById(id);
+        return tipoComercioOptional
+                .map(tipoComercioMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de comércio não encontrado com o ID: " + id));
     }
 
     /**
@@ -119,6 +124,5 @@ public class TipoComercioService {
             throw new IllegalArgumentException("O idTipoComercio deve ser um número inteiro positivo e não pode ser nulo.");
         }
     }
-
 }
 

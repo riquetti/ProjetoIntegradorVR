@@ -1,6 +1,7 @@
 package com.riquetti.ProjetoIntegrador.repository;
 
 import com.riquetti.ProjetoIntegrador.entity.TipoComercio;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositório para gerenciar o acesso a dados relacionados ao tipo de comércio.
@@ -33,11 +35,16 @@ public class TipoComercioRepository {
      * @param idTipoComercio O ID do tipo de comércio a ser recuperado.
      * @return Um objeto TipoComercio correspondente ao ID especificado.
      */
-    public TipoComercio findById(Long idTipoComercio) {
-        String sql =
-                "SELECT * FROM public.tipo_comercio WHERE id_tipo_comercio = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{idTipoComercio}, new TipoComercioRowMapper());
+    public Optional<TipoComercio> findById(Long idTipoComercio) {
+        String sql = "SELECT * FROM public.tipo_comercio WHERE id_tipo_comercio = ?";
+        try {
+            TipoComercio tipoComercio = jdbcTemplate.queryForObject(sql, new Object[]{idTipoComercio}, new TipoComercioRowMapper());
+            return Optional.of(tipoComercio);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty(); // Retorna vazio se não encontrar
+        }
     }
+
 
     /**
      * Recupera todos os tipos de comércio no banco de dados.
@@ -57,8 +64,8 @@ public class TipoComercioRepository {
      * @return O número de linhas afetadas (deve ser 1 se a inserção for bem-sucedida).
      */
     public int save(TipoComercio tipoComercio) {
-        String sql =
-                "INSERT INTO public.tipo_comercio (descricao) VALUES (?)";
+        String sql = "INSERT INTO public.tipo_comercio (descricao) VALUES (?)";
+        System.out.println("Executando SQL: " + sql + " com descricao: " + tipoComercio.getDescricao());
         return jdbcTemplate.update(sql, tipoComercio.getDescricao());
     }
 
@@ -89,7 +96,7 @@ public class TipoComercioRepository {
     /**
      * Classe interna que implementa RowMapper para mapear linhas de resultados SQL em objetos TipoComercio.
      */
-    private static class TipoComercioRowMapper implements RowMapper<TipoComercio> {
+    static class TipoComercioRowMapper implements RowMapper<TipoComercio> {
         @Override
         public TipoComercio mapRow(ResultSet rs, int rowNum) throws SQLException {
             TipoComercio tipoComercio = new TipoComercio();
